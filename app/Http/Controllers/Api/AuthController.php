@@ -25,32 +25,32 @@ class AuthController extends Controller
                 'regex:/[a-z]/',
                 'regex:/[0-9]/',
                 'regex:/[!@#$%^&*()_+\-=\[\]{};:\'"\\|,.<>\/?]/',
-            ],       
+            ],
             'confirm_password' => 'required|same:password',
         ]);
 
         $validator->after(function ($validator) use ($request) {
             $password = $request->password;
-        
+
             if (!preg_match('/[A-Z]/', $password)) {
                 $validator->errors()->add('password', 'The password must contain at least one uppercase letter.');
             }
-        
+
             if (!preg_match('/[a-z]/', $password)) {
                 $validator->errors()->add('password', 'The password must contain at least one lowercase letter.');
             }
-        
+
             if (!preg_match('/[0-9]/', $password)) {
                 $validator->errors()->add('password', 'The password must contain at least one numeric digit.');
             }
-        
+
             if (!preg_match('/[!@#$%^&*()_+\-=\[\]{};\'":\\|,.<>\/?]/', $password)) {
                 $validator->errors()->add('password', 'The password must contain at least one special character.');
             }
         });
 
-      
-        
+
+
 
         if ($validator->fails()) {
             return response()->json(['message' => 'Validation fails', 'error' => $validator->errors()], 422);
@@ -95,6 +95,15 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found', 'error' => 'User not found'], 404);
         }
     }
+
+    public function user(Request $request)
+    {
+        return response()->json(['message' => 'user successfully fetched', 'data' => $request->user()], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->CurrentAccessToken()->delete();
+        return response()->json(['message' => 'user successfully logged out'], 200);
+    }
 }
-
-
